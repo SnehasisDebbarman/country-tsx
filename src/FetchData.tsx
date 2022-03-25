@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Axios from 'axios'
+import Modal from './Modal';
 
 function sortByName(a: any, b: any) {
     if (a.name < b.name) {
@@ -19,20 +20,7 @@ function getFilteredListByRegion(countryList: any, region: any) {
     }
     return countryList.filter((country: any) => country.region === region)
 }
-const Modal: React.FC<any> = ({ modalData, handleClose }) => {
-    return (
-        <div className="modal">
-            <div className="modal-content">
-                <span className="close" onClick={handleClose}>&times;</span>
-                <h1>{modalData.name}</h1>
-                <p>Capital: {modalData.capital}</p>
-                <p>Population: {modalData.population}</p>
-                <h2>Languages</h2>
-                <img src={modalData.flag} alt={modalData.name} />
-            </div>
-        </div>
-    )
-}
+
 
 function FetchData() {
     const [data, SetData] = useState<any>([])
@@ -41,8 +29,15 @@ function FetchData() {
     //filter
     const [region, setRegion] = useState('')
     //open and close moda
-    const [modalData, setModalData] = useState<any>({})
-    const [modalOpen, setModalOpen] = useState(true)
+    const [modalData, setModalData] = useState<any>({
+        name: '',
+        capital: '',
+        population: '',
+        flag: '',
+        region: '',
+
+    })
+    const [modalOpen, setModalOpen] = useState(false)
 
     const showModalWithCountriesDetails = (country: any) => {
         console.log(country)
@@ -85,42 +80,46 @@ function FetchData() {
     return (
 
         <div className='grid-container'>
-            <div className='search'>
-                <input type='text' placeholder='Search Countries' value={search} onChange={(e) => setSearch(e.target.value)} />
-                {/* create a dropdown for filter region*/}
-                <select id="regionSelect" value={region} onChange={(e) => setRegion(e.target.value)}>
-                    <option value=''>Filter by region</option>
-                    <option value='Africa'>Africa</option>
-                    <option value='Americas'>Americas</option>
-                    <option value='Asia'>Asia</option>
-                    <option value='Europe'>Europe</option>
-                    <option value='Oceania'>Oceania</option>
-                </select>
 
-
-
-            </div>
-            <div className='grid'>
-
-                {getFilteredListByRegion(data, region).filter((country: any) => searchCountryfromList(country, search)).map((country: any) =>
-                    <div className='grid-item' key={country.name} onClick={() => showModalWithCountriesDetails(country)}>
-                        <div>
-                            <img className='img' src={country.flag} alt={country.name} />
+            <>
+                {!modalOpen &&
+                    <>
+                        <div className='search'>
+                            <input type='text' placeholder='Search Countries' value={search} onChange={(e) => setSearch(e.target.value)} />
+                            {/* create a dropdown for filter region*/}
+                            <select id="regionSelect" value={region} onChange={(e) => setRegion(e.target.value)}>
+                                <option value=''>Filter by region</option>
+                                <option value='Africa'>Africa</option>
+                                <option value='Americas'>Americas</option>
+                                <option value='Asia'>Asia</option>
+                                <option value='Europe'>Europe</option>
+                                <option value='Oceania'>Oceania</option>
+                            </select>
                         </div>
+                        <div className='grid'>
 
-                        <br />
-                        <h3>{country.name}</h3>
-                        <p>{country.region}</p>
-                        <p>{country.population}</p>
-                        <p>{country.capital}</p>
-                    </div>
-                )}
-            </div>
+                            {getFilteredListByRegion(data, region).filter((country: any) => searchCountryfromList(country, search)).map((country: any) =>
+                                <div className='grid-item' key={country.name} onClick={() => showModalWithCountriesDetails(country)}>
+                                    <div>
+                                        <img className='img' src={country.flag} alt={country.name} />
+                                    </div>
 
-            {/*   create a modal show countries details */}
-            {modalOpen && <Modal modalData={modalData} handleClose={() => setModalOpen(false)} />}
+                                    <br />
+                                    <h3>{country.name}</h3>
+                                    <p>{country.region}</p>
+                                    <p>{country.population}</p>
+                                    <p>{country.capital}</p>
+                                </div>
+                            )}
+                        </div>
+                    </>
+                }
+
+                {/*   create a modal show countries details */}
+                {modalOpen && <Modal modalData={modalData} handleClose={() => setModalOpen(false)} />}
 
 
+            </>
 
 
 
